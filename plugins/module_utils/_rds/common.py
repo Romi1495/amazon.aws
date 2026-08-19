@@ -22,6 +22,7 @@ class RDSErrorHandler(AWSErrorHandler):
         return is_boto3_error_code(
             [
                 "DBInstanceNotFound",
+                "DBParameterGroupNotFound",
                 "DBSnapshotNotFound",
                 "DBClusterNotFound",
                 "DBClusterNotFoundFault",

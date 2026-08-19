@@ -288,19 +288,10 @@ def update_iam_roles(
     return changed
 
 
+@RDSErrorHandler.list_error_handler("describe db cluster parameter groups", [])
 @AWSRetry.jittered_backoff()
 def describe_db_cluster_parameter_groups(module, connection: Any, group_name: Optional[str]) -> List[Dict[str, Any]]:
     result = []
-    try:
-        params = {}
-        if group_name is not None:
-            params["DBClusterParameterGroupName"] = group_name
-        paginator = connection.get_paginator("describe_db_cluster_parameter_groups")
-        result = paginator.paginate(**params).build_full_result()["DBClusterParameterGroups"]
-    except is_boto3_error_code("DBParameterGroupNotFound"):
-        pass
-    except ClientError as e:  # pylint: disable=duplicate-except
-        module.fail_json_aws(e, msg="Couldn't access parameter groups information")
     return result
 
 
@@ -329,19 +320,10 @@ def describe_db_instance_parameter_groups(connection: Any, module, db_parameter_
     return result
 
 
+@RDSErrorHandler.list_error_handler("describe db cluster parameters", [])
 @AWSRetry.jittered_backoff()
 def describe_db_cluster_parameters(
     module, connection: Any, group_name: str, source: str = "all"
 ) -> List[Dict[str, Any]]:
     result = []
-    try:
-        paginator = connection.get_paginator("describe_db_cluster_parameters")
-        params = {"DBClusterParameterGroupName": group_name}
-        if source != "all":
-            params["Source"] = source
-        result = paginator.paginate(**params).build_full_result()["Parameters"]
-    except is_boto3_error_code("DBParameterGroupNotFound"):
-        pass
-    except ClientError as e:  # pylint: disable=duplicate-except
-        module.fail_json_aws(e, msg="Couldn't access RDS cluster parameters information")
     return result

@@ -153,6 +153,19 @@ from ansible_collections.amazon.aws.plugins.module_utils.tagging import ansible_
 def modify_parameters(
     module: AnsibleAWSModule, connection: Any, group_name: str, parameters: List[Dict[str, Any]]
 ) -> bool:
+    """Compares desired parameters against current values and applies changes in chunks of 20.
+
+      Parameters:
+          module: AnsibleAWSModule
+          connection: boto3 RDS client
+          group_name (str): Name of the RDS cluster parameter group
+          parameters (list): List of parameter dicts with parameter_name, parameter_value, and
+  apply_method
+
+      Returns:
+          changed (bool): True if any parameters were modified, False otherwise
+      """
+
     current_params = describe_db_cluster_parameters(module, connection, group_name)
     parameters = snake_dict_to_camel_dict(parameters, capitalize_first=True)
     # compare current resource parameters with the value from module parameters
@@ -184,6 +197,14 @@ def modify_parameters(
 
 
 def ensure_present(module: AnsibleAWSModule, connection: Any) -> None:
+      """Creates or updates an RDS cluster parameter group, including tags and parameters.
+
+      Parameters:
+          module: AnsibleAWSModule
+          connection: boto3 RDS client
+
+      """
+
     group_name = module.params["name"]
     db_parameter_group_family = module.params["db_parameter_group_family"]
     tags = module.params.get("tags")
@@ -232,6 +253,13 @@ def ensure_present(module: AnsibleAWSModule, connection: Any) -> None:
 
 
 def ensure_absent(module: AnsibleAWSModule, connection: Any) -> None:
+      """Deletes an RDS cluster parameter group if it exists.
+
+      Parameters:
+          module: AnsibleAWSModule
+          connection: boto3 RDS client
+      """
+      
     group = module.params["name"]
     response = describe_db_cluster_parameter_groups(module=module, connection=connection, group_name=group)
     if not response:
