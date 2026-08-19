@@ -328,7 +328,7 @@ def describe_db_cluster_parameters(
     module, connection: Any, group_name: str, source: str = "all"
 ) -> List[Dict[str, Any]]:
     paginator = connection.get_paginator("describe_db_cluster_parameters")
-    params = {"DBClusterParameterGroupName": groupName}
+    params = {"DBClusterParameterGroupName": group_name}
     if source != "all":
         params["Source"] = source
     return paginator.paginate(**params).build_full_result()["Parameters"]
