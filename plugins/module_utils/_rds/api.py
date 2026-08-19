@@ -291,9 +291,11 @@ def update_iam_roles(
 @RDSErrorHandler.list_error_handler("describe db cluster parameter groups", [])
 @AWSRetry.jittered_backoff()
 def describe_db_cluster_parameter_groups(module, connection: Any, group_name: Optional[str]) -> List[Dict[str, Any]]:
-    result = []
-    return result
-
+    params = {} 
+    if group_name is not None:
+        params["DBClusterParameterGroupName"] = group_name
+    paginator = connection.get_paginator("describe_db_cluster_parameter_groups")
+    return paginator.paginate(**params).build_full_result()["DBClusterParameterGroups"]
 
 @AWSRetry.jittered_backoff()
 def describe_db_instance_parameter_groups(connection: Any, module, db_parameter_group_name: str = None) -> List[dict]:
@@ -325,5 +327,8 @@ def describe_db_instance_parameter_groups(connection: Any, module, db_parameter_
 def describe_db_cluster_parameters(
     module, connection: Any, group_name: str, source: str = "all"
 ) -> List[Dict[str, Any]]:
-    result = []
-    return result
+    paginator = connection.get_paginator("describe_db_cluster_parameters")
+    params = {"DBClusterParameterGroupName": groupName}
+    if source != "all":
+        params["Source"] = source
+    return paginator.paginate(**params).build_full_result()["Parameters"]

@@ -197,13 +197,13 @@ def modify_parameters(
 
 
 def ensure_present(module: AnsibleAWSModule, connection: Any) -> None:
-      """Creates or updates an RDS cluster parameter group, including tags and parameters.
+    """Creates or updates an RDS cluster parameter group, including tags and parameters.
+    
+    Parameters:
+        module: AnsibleAWSModule
+        connection: boto3 RDS client
 
-      Parameters:
-          module: AnsibleAWSModule
-          connection: boto3 RDS client
-
-      """
+    """
 
     group_name = module.params["name"]
     db_parameter_group_family = module.params["db_parameter_group_family"]
@@ -253,12 +253,13 @@ def ensure_present(module: AnsibleAWSModule, connection: Any) -> None:
 
 
 def ensure_absent(module: AnsibleAWSModule, connection: Any) -> None:
-      """Deletes an RDS cluster parameter group if it exists.
 
-      Parameters:
-          module: AnsibleAWSModule
-          connection: boto3 RDS client
-      """
+    """Deletes an RDS cluster parameter group if it exists.
+
+    Parameters:
+        module: AnsibleAWSModule
+        connection: boto3 RDS client
+    """
       
     group = module.params["name"]
     response = describe_db_cluster_parameter_groups(module=module, connection=connection, group_name=group)
