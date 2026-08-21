@@ -155,17 +155,16 @@ def modify_parameters(
 ) -> bool:
     """Compares desired parameters against current values and applies changes in chunks of 20.
 
-      Parameters:
-          module: AnsibleAWSModule
-          connection: boto3 RDS client
-          group_name (str): Name of the RDS cluster parameter group
-          parameters (list): List of parameter dicts with parameter_name, parameter_value, and
-  apply_method
+    Parameters:
+        module: AnsibleAWSModule
+        connection: boto3 RDS client
+        group_name (str): Name of the RDS cluster parameter group
+        parameters (list): List of parameter dicts with parameter_name, 
+            parameter_value, and apply_method
 
-      Returns:
-          changed (bool): True if any parameters were modified, False otherwise
-      """
-
+    Returns:
+        changed (bool): True if any parameters were modified, False otherwise
+    """
     current_params = describe_db_cluster_parameters(module, connection, group_name)
     parameters = snake_dict_to_camel_dict(parameters, capitalize_first=True)
     # compare current resource parameters with the value from module parameters
