@@ -253,7 +253,6 @@ def ensure_present(module: AnsibleAWSModule, connection: Any) -> None:
 
 
 def ensure_absent(module: AnsibleAWSModule, connection: Any) -> None:
-
     """Deletes an RDS cluster parameter group if it exists.
 
     Parameters:
