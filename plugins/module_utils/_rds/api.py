@@ -291,7 +291,7 @@ def update_iam_roles(
 @RDSErrorHandler.list_error_handler("describe db cluster parameter groups", [])
 @AWSRetry.jittered_backoff()
 def describe_db_cluster_parameter_groups(module, connection: Any, group_name: Optional[str]) -> List[Dict[str, Any]]:
-    params = {} 
+    params = {}
     if group_name is not None:
         params["DBClusterParameterGroupName"] = group_name
     paginator = connection.get_paginator("describe_db_cluster_parameter_groups")
