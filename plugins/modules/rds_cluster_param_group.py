@@ -143,6 +143,7 @@ from ansible.module_utils.common.dict_transformations import snake_dict_to_camel
 
 from ansible_collections.amazon.aws.plugins.module_utils.modules import AnsibleAWSModule
 from ansible_collections.amazon.aws.plugins.module_utils.rds import describe_db_cluster_parameter_groups
+from ansible_collections.amazon.aws.plugins.module_utils.rds import AnsibleRDSError
 from ansible_collections.amazon.aws.plugins.module_utils.rds import describe_db_cluster_parameters
 from ansible_collections.amazon.aws.plugins.module_utils.rds import ensure_tags
 from ansible_collections.amazon.aws.plugins.module_utils.rds import get_tags
@@ -301,11 +302,13 @@ def main() -> None:
         connection = module.client("rds", retry_decorator=AWSRetry.jittered_backoff())
     except (botocore.exceptions.ClientError, botocore.exceptions.BotoCoreError) as e:
         module.fail_json_aws(e, msg="Failed to connect to AWS")
-
-    if module.params.get("state") == "present":
-        ensure_present(module=module, connection=connection)
-    else:
-        ensure_absent(module=module, connection=connection)
+    try:
+        if module.params.get("state") == "present":
+            ensure_present(module=module, connection=connection)
+        else:
+            ensure_absent(module=module, connection=connection)
+    except AnsibleRDSError as e:
+        module.fail_json_aws(e, msg="Failed to manage RDS cluster parameter group")
 
 
 if __name__ == "__main__":
