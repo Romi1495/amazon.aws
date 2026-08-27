@@ -297,6 +297,7 @@ def describe_db_cluster_parameter_groups(module, connection: Any, group_name: Op
         params["DBClusterParameterGroupName"] = group_name
     paginator = connection.get_paginator("describe_db_cluster_parameter_groups")
     return paginator.paginate(**params).build_full_result()["DBClusterParameterGroups"]
+    
 
 @AWSRetry.jittered_backoff()
 def describe_db_instance_parameter_groups(connection: Any, module, db_parameter_group_name: str = None) -> List[dict]:
