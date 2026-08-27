@@ -3,6 +3,7 @@
 # Copyright: (c) 2018, Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+from itertools import zip_longest
 from typing import Any
 from typing import Dict
 from typing import List
@@ -332,3 +333,23 @@ def describe_db_cluster_parameters(
     if source != "all":
         params["Source"] = source
     return paginator.paginate(**params).build_full_result()["Parameters"]
+
+
+@RDSErrorHandler.common_error_handler("create db cluster parameter group")
+def create_db_cluster_parameter_group(connection: Any, **params: Dict) -> Dict[str, Any]:
+    return connection.create_db_cluster_parameter_group(aws_retry=True, **params)
+
+
+@RDSErrorHandler.deletion_error_handler("delete db cluster parameter group")
+def delete_db_cluster_parameter_group(connection: Any, group_name: str) -> Dict[str, Any]:
+    return connection.delete_db_cluster_parameter_group(aws_retry=True, DBClusterParameterGroupName=group_name)
+
+
+@RDSErrorHandler.common_error_handler("modify db cluster parameter group")
+def modify_db_cluster_parameter_group(connection: Any, group_name: str, parameters: List[Dict[str, Any]]) -> None:
+    # A maximum of 20 parameters can be modified in a single request, so we chunk them.
+    for chunk in zip_longest(*[iter(parameters)] * 20, fillvalue=None):
+        non_empty_chunk = [item for item in chunk if item]
+        connection.modify_db_cluster_parameter_group(
+            aws_retry=True, DBClusterParameterGroupName=group_name, Parameters=non_empty_chunk
+        )
