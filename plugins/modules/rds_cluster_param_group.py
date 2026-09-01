@@ -141,10 +141,10 @@ from ansible.module_utils.common.dict_transformations import camel_dict_to_snake
 from ansible.module_utils.common.dict_transformations import snake_dict_to_camel_dict
 
 from ansible_collections.amazon.aws.plugins.module_utils.modules import AnsibleAWSModule
-from ansible_collections.amazon.aws.plugins.module_utils.rds import describe_db_cluster_parameter_groups
 from ansible_collections.amazon.aws.plugins.module_utils.rds import AnsibleRDSError
 from ansible_collections.amazon.aws.plugins.module_utils.rds import create_db_cluster_parameter_group
 from ansible_collections.amazon.aws.plugins.module_utils.rds import delete_db_cluster_parameter_group
+from ansible_collections.amazon.aws.plugins.module_utils.rds import describe_db_cluster_parameter_groups
 from ansible_collections.amazon.aws.plugins.module_utils.rds import describe_db_cluster_parameters
 from ansible_collections.amazon.aws.plugins.module_utils.rds import ensure_tags
 from ansible_collections.amazon.aws.plugins.module_utils.rds import get_tags
@@ -206,7 +206,7 @@ def modify_parameters(
 
 def ensure_present(module: AnsibleAWSModule, connection: Any) -> None:
     """Creates or updates an RDS cluster parameter group, including tags and parameters.
-    
+
     Parameters:
         module: AnsibleAWSModule
         connection: boto3 RDS client
@@ -264,7 +264,7 @@ def ensure_absent(module: AnsibleAWSModule, connection: Any) -> None:
         module: AnsibleAWSModule
         connection: boto3 RDS client
     """
-      
+
     group = module.params["name"]
     response = describe_db_cluster_parameter_groups(module=module, connection=connection, group_name=group)
     if not response:
