@@ -174,7 +174,7 @@ def _get_changed_parameters(
             if param.get("ParameterName") == current_p.get("ParameterName"):
                 found = True
                 if not current_p["IsModifiable"]:
-                    module.fail_json(f"The parameter {param.get('ParameterName')} cannot be modified")
+                    module.fail_json(msg=f"The parameter {param.get('ParameterName')} cannot be modified")
                 changed |= any((current_p.get(k) != v for k, v in param.items()))
         if not found:
             module.fail_json(msg=f"Could not find parameter with name: {param.get('ParameterName')}")
